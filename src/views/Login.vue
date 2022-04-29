@@ -76,7 +76,7 @@
           .then(response => {
             console.log(response)
             if (response.data.status == "ok") {
-                console.log("hi");
+                console.log("hi111");
                 this.$router.push('/home');
             }
           })
