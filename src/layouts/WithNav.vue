@@ -1,55 +1,63 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">呱唧呱唧汪汪汪</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <div v-for="item in items" v-bind:key="item">
-            <li class="nav-item">
-              <router-link to="/shop" class="nav-link active">{{item.title}}</router-link>
-              <!-- <a class="nav-link active" aria-current="page" href="#">{{item.title}}</a> -->
-            </li>
-          </div>
-        </ul>
+  <v-layout style="height: 100wh">
+    <v-card>
+      <v-navigation-drawer
+        v-model="drawer"
+        :rail="rail"
+        permanent
+        @click="rail = false"
+      >
+        <v-list-item
+          prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
+          title="John Leider"
+        >
+          <template v-slot:append>
+            <v-btn
+              variant="text"
+              icon="mdi-chevron-left"
+              @click.stop="rail = !rail"
+            ></v-btn>
+          </template>
+        </v-list-item>
 
-        <form class="d-flex">
-          <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle navbar-text" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              其他
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <li><router-link to="/shop" class="dropdown-item" href="#">店铺资料</router-link></li>
-              <li><router-link to="/shop" class="dropdown-item" href="#">登出</router-link></li>
-            </ul>
-          </div>
-        </form>
-      </div>
-    </div>
-  </nav>
-  <slot />
+        <v-divider></v-divider>
+
+        <v-list density="compact" v-for="item in items" :key="item.title" nav>
+          <v-list-item
+            :prepend-icon="item.icon"
+            :title="item.title"
+            value="home"
+            @click="route(item.path)"
+          />
+        </v-list>
+      </v-navigation-drawer>
+    </v-card>
+
+    <v-main class="grey lighten-5">
+      <slot />
+    </v-main>
+  </v-layout>
 </template>
 
-
 <script>
-  export default {
-    data () {
-      return {
-        drawer: true,
-        items: [
-          { title: '单', path: "paper" },
-          { title: '顾客', path: "customer" },
-          { title: '产品', path: "item" },
-        ],
-        mini: true,
-      }
+export default {
+  props: ["content"],
+  data() {
+    return {
+      drawer: true,
+      items: [
+        { title: "Papers", icon: "mdi-receipt", path: "paper" },
+        { title: "Items", icon: "mdi-cart", path: "item" },
+        { title: "Shop", icon: "mdi-store", path: "shop" },
+        { title: "Account", icon: "mdi-account", path: "account" },
+      ],
+      rail: true,
+    };
+  },
+  methods: {
+    route(path) {
+      this.$router.push(path);
     },
-    methods: {
-      route(path) {
-        Turbolinks.visit(path);
-      }
-    }
-  }
+  },
+};
 </script>

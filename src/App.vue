@@ -13,7 +13,7 @@ export default {
   computed: {
     layout() {
       return (this.$route.meta.layout || default_layout) + "-layout";
-    }
+    },
   },
 
   data: () => ({
