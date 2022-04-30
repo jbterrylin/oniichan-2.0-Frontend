@@ -24,6 +24,13 @@ const pinia = createPinia();
 library.add(faEye)
 library.add(faEyeSlash)
 
+import Default from './layouts/Default.vue'
+import WithNav from './layouts/WithNav.vue'
+
 axios.defaults.baseURL = "http://127.0.0.1:3001"
 
-createApp(App).use(pinia).use(router).use(VueAxios, axios).component("font-awesome-icon", FontAwesomeIcon).mount("#app");
+createApp(App).use(pinia).use(router).use(VueAxios, axios)
+    .component("font-awesome-icon", FontAwesomeIcon)
+    .component('default-layout', Default)
+    .component('with-nav-layout', WithNav)
+    .mount("#app");

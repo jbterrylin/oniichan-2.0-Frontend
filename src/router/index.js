@@ -13,7 +13,14 @@ const router = createRouter({
     {
       path: "/home",
       name: "home",
+      meta: { layout: "with-nav"},
       component: () => import("../views/Home.vue"),
+    },
+    {
+      path: "/shop",
+      name: "shop",
+      meta: { layout: "with-nav"},
+      component: () => import("../views/Shop.vue"),
     },
     {
       path: "/about",
