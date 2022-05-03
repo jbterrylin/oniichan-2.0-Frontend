@@ -37,7 +37,8 @@
 
 <script>
 import { required, maxLength } from "@vuelidate/validators";
-import axios from "axios";
+import { userStore } from "../stores/userStore";
+
 export default {
   validations: {
     username: { required, maxLength: maxLength(6) },
@@ -52,22 +53,37 @@ export default {
   computed: {},
   methods: {
     submit() {
-      axios
-        .post(`/login`, {
+      userStore().login({
           name: this.username,
           password: this.password,
           isLogin: true,
-        })
-        .then((response) => {
-          console.log(response);
-          if (response.data.status == "ok") {
-            this.$router.push("/home");
-          }
-        })
-        .catch((error) => {
-          this.isError = true;
-          console.log(error);
-        });
+        }).then((response) => {
+        console.log(response);
+        if (response.status == "ok") {
+          this.$router.push("/home");
+        }
+      })
+      .catch((error) => {
+        this.isError = true;
+        console.log(error);
+      });
+      // axios
+        // .post(`/login`, {
+        //   name: this.username,
+        //   password: this.password,
+        //   isLogin: true,
+        // })
+      //   .then((response) => {
+      //     console.log(response);
+      //     if (response.data.status == "ok") {
+      //       this.$router.push("/home");
+      //     }
+
+      //   })
+      //   .catch((error) => {
+      //     this.isError = true;
+      //     console.log(error);
+      //   });
     },
     clear() {
       this.$v.$reset();

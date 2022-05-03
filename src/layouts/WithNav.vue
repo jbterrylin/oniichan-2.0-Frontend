@@ -9,7 +9,7 @@
       >
         <v-list-item
           prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
-          title="John Leider"
+          :title="this.user.name"
         >
           <template v-slot:append>
             <v-btn
@@ -40,19 +40,27 @@
 </template>
 
 <script>
+import { mapWritableState } from 'pinia';
+import { userStore } from "../stores/userStore";
+import {ref} from 'vue';
+
 export default {
-  props: ["content"],
   data() {
     return {
       drawer: true,
       items: [
-        { title: "Papers", icon: "mdi-receipt", path: "paper" },
-        { title: "Items", icon: "mdi-cart", path: "item" },
-        { title: "Shop", icon: "mdi-store", path: "shop" },
-        { title: "Account", icon: "mdi-account", path: "account" },
+        { title: "单", icon: "mdi-receipt", path: "paper" },
+        { title: "产品", icon: "mdi-cart", path: "item" },
+        { title: "本店资料", icon: "mdi-store", path: "shop" },
+        { title: "账户", icon: "mdi-account", path: "account" },
       ],
       rail: true,
     };
+  },
+  setup() {
+    const user = ref(userStore().user)
+
+    return { user }
   },
   methods: {
     route(path) {
