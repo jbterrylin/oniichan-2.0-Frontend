@@ -3,21 +3,22 @@ import axios from "axios";
 import { ref, computed } from "vue";
 
 export const userStore = defineStore(
-  "userStore",
-  () => {
-    const user = ref(null);
+    "userStore",
+    () => {
+        const user = ref(null);
 
-    const getUser = computed(() => user.value);
+        const getUser = computed(() => user.value);
 
-    const login = async (payload) => {
-      const { data } = await axios.post(`/login`, payload);
-      user.value = data.data;
-      return data;
-    };
+        const login = async (payload) => {
+            const { data } = await axios.post(`/login`, payload);
+            localStorage.setItem("token", data.token);
+            user.value = data.data;
+            return data;
+        };
 
-    return { user, getUser, login };
-  },
-  {
-    persist: true,
-  }
+        return { user, getUser, login };
+    },
+    {
+        persist: true,
+    }
 );

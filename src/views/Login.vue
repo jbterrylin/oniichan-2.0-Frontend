@@ -53,11 +53,10 @@ export default {
                 .login({
                     name: this.username,
                     password: this.password,
-                    isLogin: true,
                 })
                 .then((response) => {
                     if (response.status == "ok") {
-                        this.$router.push("/home");
+                        this.$router.replace("/home");
                     }
                 });
         },

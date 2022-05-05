@@ -44,6 +44,28 @@ export default {
                 return Promise.reject(err);
             }
         );
+        this.$http.interceptors.request.use(
+            function (config) {
+                const token = localStorage.getItem("token");
+                if (token) {
+                    config.headers["Authorization"] = token;
+                }
+                return config;
+            },
+            function (error) {
+                return Promise.reject(error);
+            }
+        );
+
+        this.$router.beforeResolve((to, from, next) => {
+            if(to.meta.requiresAuth && !localStorage.getItem("token")) {
+                console.log(to);
+                next({
+                    name: "login"
+                });
+            }
+            next();
+        });
     },
     computed: {
         layout() {
