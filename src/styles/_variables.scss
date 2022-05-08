@@ -1,2 +1,16 @@
 // Place SASS variable overrides here
 // $font-size-root: 18px;
+
+.checkbox-text-opacity-1 {
+    div {
+        div {
+            label {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

@@ -38,7 +38,7 @@ export default {
                         "出现错误请通知工具人<br/>" +
                         err.response.status +
                         ":" +
-                        err.response.data.message,
+                        err.response.data.errors,
                     icon: "mdi-alert-octagon-outline",
                 });
                 return Promise.reject(err);
@@ -47,6 +47,7 @@ export default {
         this.$http.interceptors.request.use(
             function (config) {
                 const token = localStorage.getItem("token");
+                console.log(token);
                 if (token) {
                     config.headers["Authorization"] = token;
                 }

@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-card class="px-8 py-4 mx-8 my-4" tile outlined>
+        <v-card class="px-8 py-4 mx-8 my-4">
             <v-row no-gutters>
                 <v-col md="auto" class="d-flex align-center">
                     <v-card-title class="pa-0"> 您的公司 </v-card-title>

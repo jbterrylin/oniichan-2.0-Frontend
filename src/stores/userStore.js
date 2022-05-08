@@ -11,7 +11,8 @@ export const userStore = defineStore(
 
         const login = async (payload) => {
             const { data } = await axios.post(`/login`, payload);
-            localStorage.setItem("token", data.token);
+            localStorage.setItem("token", `Bearer ` + data.token);
+            console.log("Bearer " + data.token);
             user.value = data.data;
             return data;
         };

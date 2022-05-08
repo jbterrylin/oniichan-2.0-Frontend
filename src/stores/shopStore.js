@@ -12,17 +12,14 @@ export const shopStore = defineStore(
 
         const getUserShop = async (payload) => {
             const { data } = await axios.get(
-                `/user_shop/` + userStore().user.id
+                `/user_shops/` + userStore().user.id
             );
             shop.value = data.data;
             return data;
         };
 
         const postUserShop = async (payload) => {
-            const data = await axios.post(`/user_shop`, {
-                ...payload,
-                user_id: userStore().user.id,
-            });
+            const data = await axios.post(`/user_shops`, payload);
             shop.value = data.data;
             return data;
         };
