@@ -32,7 +32,6 @@
 
 <script>
 export default {
-    props: ["customerData"],
     data: () => ({
         data: {
             name: "123",
@@ -41,8 +40,5 @@ export default {
         },
         rules: [(v) => !!v || "必填内容"],
     }),
-    beforeMount() {
-        if (this.customerData) this.data = this.customerData;
-    },
 };
 </script>

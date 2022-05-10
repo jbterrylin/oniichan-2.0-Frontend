@@ -1,6 +1,6 @@
 const PAPER_TYPE = {
     QUOTATION: "quotation",
-    RECEIPT: "receipt",
+    INVOICE: "invoice",
 };
 
 const PRICE_UNIT = {

@@ -4,7 +4,7 @@
             <v-card-title
                 ><v-toolbar-title>创建新单</v-toolbar-title
                 ><v-btn color="primary" class="float-right" @click="submit">
-                    submit
+                    {{ btnText }}
                 </v-btn></v-card-title
             >
             <v-card-content>
@@ -14,7 +14,7 @@
                     </v-col>
                     <v-col cols="8">
                         <v-text-field
-                            v-model="filename"
+                            v-model="paper.name"
                             variant="underlined"
                             color="primary"
                             hide-details
@@ -24,12 +24,12 @@
                     <v-col cols="4" />
                     <v-col cols="4">
                         <v-checkbox
-                            v-model="isQuotation"
+                            v-model="paper.isQuotation"
                             :label="`种类: ${
-                                isQuotation ? 'Quotation' : 'Invoice'
+                                paper.isQuotation ? 'Quotation' : 'Invoice'
                             }`"
                             v-on:change="
-                                isQuotation
+                                paper.isQuotation
                                     ? (tails[3].subheader = '总共')
                                     : (tails[3].subheader = '尾款')
                             "
@@ -41,8 +41,8 @@
                     </v-col>
                     <v-col cols="4">
                         <v-checkbox
-                            v-model="isMYR"
-                            :label="`价格单位: ${isMYR ? 'RM' : 'SGD'}`"
+                            v-model="paper.isMYR"
+                            :label="`价格单位: ${paper.isMYR ? 'RM' : 'SGD'}`"
                             color="primary"
                             class="checkbox-text-opacity-1"
                             hide-details
@@ -52,16 +52,11 @@
             </v-card-content>
         </v-card>
 
-        <customerCard
-            ref="customerData"
-            :customerData="customer"
-            class="mb-8"
-        />
+        <customerCard ref="customerData" class="mb-8" />
 
         <ItemList
             v-on:getTotal="getTotal($event)"
             ref="itemData"
-            :itemData="items"
             class="mb-8"
         />
 
@@ -143,16 +138,18 @@ import { paperStore } from "../../stores/paperStore";
 import { PAPER_TYPE, PRICE_UNIT } from "../../constant/constant";
 
 export default {
-    props: ["paper", "customer", "items"],
     components: {
         ItemList: ItemList,
         customerCard: customerCard,
     },
     data: () => ({
-        filename: "",
-        isQuotation: true,
-        isMYR: true,
-
+        paper: {
+            name: "",
+            isQuotation: true,
+            isMYR: true,
+            customer: null,
+            items: null,
+        },
         isDepositNumber: false,
         depositSelect: "50%",
         depositItems: ["20%", "30%", "40%", "50%", "60%"],
@@ -163,9 +160,14 @@ export default {
             { subheader: "总共", value: 0, disabled: true },
         ],
     }),
+    computed: {
+        btnText() {
+            return this.$router.currentRoute.value.name === "paper_show"
+                ? "更改"
+                : "增加";
+        },
+    },
     beforeMount() {
-        this.shopItems = [];
-
         const today = new Date();
         const date =
             today.getFullYear() +
@@ -180,22 +182,65 @@ export default {
             "." +
             today.getSeconds();
         const timestamp = date + "~" + time;
-        this.filename = timestamp;
+        this.paper.name = timestamp;
 
-        // if(this.$router.currentRoute.value.path === "/paper/create") {
+        if (this.$router.currentRoute.value.name === "paper_show") {
+            paperStore()
+                .getPaper(this.$router.currentRoute.value.params.id)
+                .then((response) => {
+                    if (response.status === "ok") {
+                        this.paper = response.data;
+                        this.paper.isQuotation =
+                            this.paper.paper_type === PAPER_TYPE.QUOTATION
+                                ? true
+                                : false;
+                        this.paper.isMYR =
+                            this.paper.price_unit === PRICE_UNIT.RM
+                                ? true
+                                : false;
 
-        // }
+                        this.$refs.customerData.data = this.paper.customer;
 
-        // if (this.paper) {
-        //     const paperdata = this.paper;
-        //     this.filename = paperdata.name;
-        //     this.isQuotation =
-        //         paperdata.paper_type == "quotation" ? true : false;
-        //     this.shopSelect = paperdata.shop_id;
-        //     this.isMYR = paperdata.price_unit == "MYR" ? true : false;
-        //     this.tails[1].value = paperdata.discount;
-        //     this.tails[2].value = paperdata.deposit;
-        // }
+                        this.$refs.itemData.data = this.paper.items;
+                        this.$refs.itemData.calculateTotal();
+
+                        this.tails[1].value = this.paper.discount;
+                        this.tails[2].value = this.paper.deposit;
+
+                        // if deposit same with % in depositItems, isDepositNumber = false and change to that %
+                        // else isDepositNumber = true
+                        this.depositItems
+                            .map((val) =>
+                                ((this.tails[0].value - this.tails[1].value) *
+                                    parseFloat(val.replace("%", ""))) /
+                                    100 ==
+                                this.tails[2].value
+                                    ? true
+                                    : false
+                            )
+                            .indexOf(true) === -1
+                            ? (this.isDepositNumber = true)
+                            : (this.depositSelect =
+                                  this.depositItems[
+                                      this.depositItems
+                                          .map((val) =>
+                                              ((this.tails[0].value -
+                                                  this.tails[1].value) *
+                                                  parseFloat(
+                                                      val.replace("%", "")
+                                                  )) /
+                                                  100 ==
+                                              this.tails[2].value
+                                                  ? true
+                                                  : false
+                                          )
+                                          .indexOf(true)
+                                  ]);
+                        this.calculateTails();
+                    }
+                });
+            this.disabledAll = true;
+        }
     },
     methods: {
         isDepositNumberChange() {
@@ -213,7 +258,7 @@ export default {
                     (this.depositSelect.slice(0, -1) / 100)
                 ).toFixed(2);
             }
-            if (this.isQuotation) {
+            if (this.paper.isQuotation) {
                 this.tails[3].value = this.tails[0].value - this.tails[1].value;
             } else {
                 this.tails[3].value =
@@ -228,42 +273,34 @@ export default {
             });
         },
         submit() {
-            if (this.$router.currentRoute.value.path === "/paper/create") {
+            var payload = {
+                name: this.paper.name,
+                paper_type: this.paper.isQuotation
+                    ? PAPER_TYPE.QUOTATION
+                    : PAPER_TYPE.INVOICE,
+                price_unit: this.paper.isMYR ? PRICE_UNIT.RM : PRICE_UNIT.SGD,
+                customer: this.$refs.customerData.data,
+                discount: this.tails[1].value,
+                deposit: this.tails[2].value,
+                items: this.$refs.itemData.data,
+            };
+            if (this.$router.currentRoute.value.name === "paper_create") {
                 paperStore()
-                    .postPaper({
-                        name: this.filename,
-                        paper_type: this.isQuotation
-                            ? PAPER_TYPE.QUOTATION
-                            : PAPER_TYPE.RECEIPT,
-                        price_unit: this.isMYR ? PRICE_UNIT.RM : PRICE_UNIT.SGD,
-                        customer: this.$refs.customerData.data,
-                        discount: this.tails[1].value,
-                        deposit: this.tails[2].value,
-                        items: this.$refs.itemData.data,
-                    })
+                    .postPaper(payload)
                     .then((response) => {
+                        console.log("hello");
+                        console.log(response);
                         if (response.status == "ok") {
-                            this.$router.replace({ path: "/papers" });
+                            this.$router.replace({
+                                path: "/papers/" + response.data.id,
+                            });
                         }
                     });
             } else {
-                // axios
-                //     .put(`/papers/` + JSON.parse(this.paper).id, {
-                //         name: this.filename,
-                //         paper_type: this.isQuotation
-                //             ? PAPER_TYPE.QUOTATION
-                //             : PAPER_TYPE.RECEIPT,
-                //         shop_id: this.shopSelect,
-                //         price_unit: this.isMYR ? PRICE_UNIT.RM : PRICE_UNIT.SGD,
-                //         customer: this.$refs.customerData.data,
-                //         discount: this.tails[1].value,
-                //         deposit: this.tails[2].value,
-                //         items: this.$refs.itemData.data,
-                //     })
-                //     .then((response) => {
-                //         if (response.data.status == "ok")
-                //             Turbolinks.visit(Routes.papers_path());
-                //     });
+                paperStore().putPaper(
+                    this.$router.currentRoute.value.params.id,
+                    payload
+                );
             }
         },
     },

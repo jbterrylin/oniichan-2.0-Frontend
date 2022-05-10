@@ -30,7 +30,13 @@ const router = createRouter({
         },
         {
             path: "/paper/create",
-            name: "papers_create",
+            name: "paper_create",
+            meta: { layout: "with-nav", requiresAuth: true },
+            component: () => import("../views/Paper/Create.vue"),
+        },
+        {
+            path: "/papers/:id",
+            name: "paper_show",
             meta: { layout: "with-nav", requiresAuth: true },
             component: () => import("../views/Paper/Create.vue"),
         },

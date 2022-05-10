@@ -2,7 +2,11 @@
     <v-card class="px-8 py-4 mt-4 mb-8">
         <v-card-title
             ><v-toolbar-title>商品单</v-toolbar-title
-            ><v-dialog v-model="dialog" min-width="1200px">
+            ><v-dialog
+                v-model="dialog"
+                min-width="1200px"
+                :retain-focus="false"
+            >
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props"> 增加 </v-btn>
                 </template>
@@ -12,10 +16,7 @@
                     </v-card-title>
 
                     <v-card-content>
-                        <v-form
-                            ref="form"
-                            lazy-validation
-                        >
+                        <v-form ref="form">
                             <v-row>
                                 <v-col
                                     v-for="(value, name, index) in editedItem"
@@ -31,9 +32,8 @@
                                                 unit: '单位',
                                             }[name]
                                         "
-                                        required
                                         :rules="
-                                            index == 0 ? rules : onlyNumbers
+                                            index == 0 ? rules() : onlyNumbers
                                         "
                                         color="primary"
                                     />
@@ -83,7 +83,11 @@
                         >
                             mdi-arrow-down-thick
                         </v-icon>
-                        <v-icon x-small class="mr-1 cursor-pointer" @click="editItem(record)">
+                        <v-icon
+                            x-small
+                            class="mr-1 cursor-pointer"
+                            @click="editItem(record)"
+                        >
                             mdi-pencil
                         </v-icon>
                         <v-icon
@@ -101,22 +105,50 @@
                     <v-card-title>你确定要删除此产品吗？</v-card-title>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary darken-1" text @click="closeDelete">Cancel</v-btn>
-                        <v-btn color="primary darken-1" text @click="deleteItemConfirm">OK</v-btn>
+                        <v-btn
+                            color="primary darken-1"
+                            text
+                            @click="closeDelete"
+                            >Cancel</v-btn
+                        >
+                        <v-btn
+                            color="primary darken-1"
+                            text
+                            @click="deleteItemConfirm"
+                            >OK</v-btn
+                        >
                         <v-spacer></v-spacer>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
         </v-card-content>
+        <v-dialog v-model="dialogWarningCreateEmptyItem" max-width="500px">
+            <v-card class="px-8 py-4">
+                <v-card-title>你确定不要输入价格和单位吗？</v-card-title>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="primary darken-1"
+                        text
+                        @click="closeDialogWarningCreateEmptyItem()"
+                        >Cancel</v-btn
+                    >
+                    <v-btn color="primary darken-1" text @click="save()"
+                        >OK</v-btn
+                    >
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-card>
 </template>
 
 <script>
 export default {
-    props: ["itemData"],
     data: () => ({
         dialog: false,
         dialogDelete: false,
+        dialogWarningCreateEmptyItem: false,
         columns: [
             {
                 title: "操作",
@@ -180,16 +212,15 @@ export default {
         editedIndex: -1,
         editedItem: {
             description: "",
-            unit_price: 0,
-            unit: 0,
+            unit_price: "",
+            unit: "",
         },
         defaultItem: {
             description: "",
-            unit_price: 0,
-            unit: 0,
+            unit_price: "",
+            unit: "",
         },
         total: 0,
-        rules: [(v) => !!v || "必填内容"],
         onlyNumbers: [(v) => parseFloat(v) >= 0 || "请输入数字"],
     }),
 
@@ -206,69 +237,28 @@ export default {
         dialogDelete(val) {
             val || this.closeDelete();
         },
+        dialogWarningCreateEmptyItem(val) {
+            val || this.closeDialogWarningCreateEmptyItem();
+        },
     },
 
     beforeMount() {
-        if (this.itemData) {
-            this.data = this.itemData;
-            this.data.forEach((element) => {
-                element["price"] = (element.unit_price * element.unit).toFixed(
-                    2
-                );
-            });
-        }
         this.calculateTotal();
-        console.log(this.data);
-    },
-
-    created() {
-        // this.data = [
-        //     {
-        //     sort_id: 0,
-        //     description: '12',
-        //     unit_price: 0,
-        //     unit: 0,
-        //     price: 0,
-        //     },
-        //     {
-        //     sort_id: 1,
-        //     description: '34',
-        //     unit_price: 2,
-        //     unit: 3,
-        //     price: 0,
-        //     },
-        //     {
-        //     sort_id: 2,
-        //     description: '56',
-        //     unit_price: 0,
-        //     unit: 0,
-        //     price: 0,
-        //     },
-        //     {
-        //     sort_id: 3,
-        //     description: '78',
-        //     unit_price: 0,
-        //     unit: 0,
-        //     price: 0,
-        //     },
-        //     {
-        //     sort_id: 4,
-        //     description: '90',
-        //     unit_price: 0,
-        //     unit: 0,
-        //     price: 0,
-        //     },
-        //     {
-        //     sort_id: 5,
-        //     description: 'ab',
-        //     unit_price: 0,
-        //     unit: 0,
-        //     price: 0,
-        //     },
-        // ]
     },
 
     methods: {
+        rules() {
+            return [
+                (v) =>
+                    (v != "" &&
+                        this.editedItem.unit_price == "" &&
+                        this.editedItem.unit == "") ||
+                    (!!v &&
+                        !!this.editedItem.unit_price &&
+                        !!this.editedItem.unit) ||
+                    "必填内容",
+            ];
+        },
         changeOrderItem(item, number) {
             this.editedIndex = this.data[this.data.indexOf(item)].sort_id;
             if (
@@ -290,11 +280,11 @@ export default {
 
         editItem(item) {
             this.editedIndex = this.data.indexOf(item);
-            this.editedItem = Object.assign({}, item);
-            // this.$delete(this.editedItem, "price");
-            // this.$delete(this.editedItem, "sort_id");
-            delete this.editedItem["price"];
-            delete this.editedItem["sort_id"];
+            this.editedItem = (({ description, unit_price, unit }) => ({
+                description,
+                unit_price,
+                unit,
+            }))(item);
             this.dialog = true;
         },
 
@@ -320,6 +310,7 @@ export default {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
             });
+            this.calculateTotal();
         },
 
         closeDelete() {
@@ -330,46 +321,79 @@ export default {
             });
         },
 
-        save() {
-            this.$refs.form.validate().then((value) => {
-                if (value.valid) {
-                    this.editedItem.price =
-                        this.editedItem.unit_price * this.editedItem.unit;
-                    this.editedItem.unit = parseFloat(
-                        this.editedItem.unit
-                    )
-                    this.editedItem.unit_price = parseFloat(
-                        this.editedItem.unit_price
-                    ).toFixed(2);
-                    this.editedItem.price = parseFloat(
-                        this.editedItem.price
-                    ).toFixed(2);
-                    if (this.editedIndex > -1) {
-                        Object.assign(
-                            this.data[this.editedIndex],
-                            this.editedItem
-                        );
-                    } else {
-                        if (this.data.length != 0)
-                            this.editedItem.sort_id =
-                                this.data.reduce((a, b) =>
-                                    Number(a.sort_id) > Number(b.sort_id)
-                                        ? a
-                                        : b
-                                ).sort_id + 1;
-                        else this.editedItem.sort_id = 0;
-                        this.data.push(this.editedItem);
-                    }
-                    console.log("reach");
-                    this.close();
-                    this.calculateTotal();
-                }
+        closeDialogWarningCreateEmptyItem() {
+            this.dialogWarningCreateEmptyItem = false;
+            this.$nextTick(() => {
+                this.editedItem = Object.assign({}, this.defaultItem);
+                this.editedIndex = -1;
             });
         },
 
+        save() {
+            if (this.dialogWarningCreateEmptyItem === true) {
+                if (this.editedIndex > -1) {
+                    Object.assign(this.data[this.editedIndex], this.editedItem);
+                } else {
+                    if (this.data.length != 0)
+                        this.editedItem.sort_id =
+                            this.data.reduce((a, b) =>
+                                Number(a.sort_id) > Number(b.sort_id) ? a : b
+                            ).sort_id + 1;
+                    else this.editedItem.sort_id = 0;
+                    this.data.push(this.editedItem);
+                }
+                this.dialogWarningCreateEmptyItem = false;
+                this.close();
+            } else if (
+                this.editedItem.unit_price === "" &&
+                this.editedItem.unit === ""
+            ) {
+                this.dialogWarningCreateEmptyItem = true;
+            } else if (this.dialogWarningCreateEmptyItem === false) {
+                this.$refs.form.validate().then((value) => {
+                    if (value.valid) {
+                        this.editedItem.price =
+                            this.editedItem.unit_price * this.editedItem.unit;
+                        this.editedItem.unit = parseFloat(this.editedItem.unit);
+                        this.editedItem.unit_price = parseFloat(
+                            this.editedItem.unit_price
+                        ).toFixed(2);
+                        this.editedItem.price = parseFloat(
+                            this.editedItem.price
+                        ).toFixed(2);
+                        if (this.editedIndex > -1) {
+                            Object.assign(
+                                this.data[this.editedIndex],
+                                this.editedItem
+                            );
+                        } else {
+                            if (this.data.length != 0)
+                                this.editedItem.sort_id =
+                                    this.data.reduce((a, b) =>
+                                        Number(a.sort_id) > Number(b.sort_id)
+                                            ? a
+                                            : b
+                                    ).sort_id + 1;
+                            else this.editedItem.sort_id = 0;
+                            this.data.push(this.editedItem);
+                            this.calculateTotal();
+                        }
+                        this.close();
+                    }
+                });
+            }
+        },
+
         calculateTotal() {
+            this.data.forEach((val) => {
+                val.price = (
+                    parseFloat(val.unit_price) * parseFloat(val.unit)
+                ).toFixed(2);
+                if (val.price == "NaN") val.price = null;
+            });
             this.total = this.data.reduce(
-                (sum, item) => (sum += parseFloat(item.price)),
+                (sum, item) =>
+                    (sum += item.price != null ? parseFloat(item.price) : 0),
                 0
             );
             this.$emit("getTotal", this.total);

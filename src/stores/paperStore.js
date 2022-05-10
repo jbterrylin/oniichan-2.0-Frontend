@@ -7,6 +7,7 @@ export const paperStore = defineStore(
     "paperStore",
     () => {
         const paperlist = ref([]);
+        const paper = ref(null);
 
         const getPapers = computed(() => paperlist.paperlist);
 
@@ -17,15 +18,24 @@ export const paperStore = defineStore(
         };
 
         const getPaperWithPagination = async (payload) => {
-            console.log(payload)
             const data = await axios.post(`/papers_with_pagination`, payload);
-            await console.log(data.data.data.map((data) => data.customers_id));
             paperlist.value = data.data;
             return data;
         };
 
         const postPaper = async (payload) => {
-            const data = await axios.post(`/papers`, payload);
+            const { data } = await axios.post(`/papers`, payload);
+            return data;
+        };
+
+        const putPaper = async (id, payload) => {
+            const { data } = await axios.put(`/papers/` + id, payload);
+            return data;
+        };
+
+        const getPaper = async (id) => {
+            const { data } = await axios.get(`/papers/` + id);
+            paper.value = data.data;
             return data;
         };
 
@@ -35,6 +45,8 @@ export const paperStore = defineStore(
             getPaperList,
             getPaperWithPagination,
             postPaper,
+            putPaper,
+            getPaper,
         };
     },
     {

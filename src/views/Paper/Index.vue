@@ -68,7 +68,6 @@
                                     )
                                 "
                             >
-                                <template #icon><SearchOutlined /></template>
                                 Search
                             </a-button>
                             <a-button
@@ -80,7 +79,12 @@
                             </a-button>
                         </div>
                     </template>
-                    <template #bodyCell="{ text, column }">
+                    <template #bodyCell="{ text, column, record }">
+                        <template v-if="column.dataIndex === 'name'">
+                            <a @click="route('/papers/' + record.id)">{{
+                                text
+                            }}</a>
+                        </template>
                         <span
                             v-if="
                                 searchText &&
@@ -159,8 +163,8 @@ export default {
                         value: PAPER_TYPE.QUOTATION,
                     },
                     {
-                        text: "Receipt",
-                        value: PAPER_TYPE.RECEIPT,
+                        text: "Invoice",
+                        value: PAPER_TYPE.INVOICE,
                     },
                 ],
                 onFilter: (value, record) => record.paper_type == value,
@@ -181,8 +185,8 @@ export default {
                 onFilter: (value, record) => record.price_unit == value,
             },
             {
-                title: "customer_id",
-                dataIndex: "customers_id",
+                title: "customer name",
+                dataIndex: ["customer", "name"],
             },
             {
                 title: "discount",
@@ -191,6 +195,10 @@ export default {
             {
                 title: "deposit",
                 dataIndex: "deposit",
+            },
+            {
+                title: "total price",
+                dataIndex: "total_price",
             },
         ],
     }),
@@ -275,7 +283,6 @@ export default {
     computed: {},
     methods: {
         route(path) {
-            // Turbolinks.visit(Routes.new_shop_path());
             this.$router.replace(path);
         },
     },
