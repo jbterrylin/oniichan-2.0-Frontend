@@ -1,10 +1,18 @@
 <template>
     <v-container>
+        <v-alert color="primary" variant="outlined">
+            <template v-slot:title> 提示 </template>
+            拷贝创建使用最新的本店资料。
+        </v-alert>
         <v-card class="px-8 py-4 my-4 d-flex align-center">
             <v-card-content>
                 <div class="d-flex mb-4 align-center">
                     <v-toolbar-title class="ml-1">单list</v-toolbar-title>
-                    <v-btn color="primary" :disabled="selectedRow === null" @click="route('/paper/create/' + selectedRow)">
+                    <v-btn
+                        color="primary"
+                        :disabled="selectedRow === null"
+                        @click="route('/paper/create/' + selectedRow)"
+                    >
                         拷贝创建
                     </v-btn>
                     <v-btn

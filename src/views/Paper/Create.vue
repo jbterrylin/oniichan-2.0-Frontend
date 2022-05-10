@@ -61,6 +61,16 @@
                             hide-details
                         />
                     </v-col>
+                    <v-col cols="4" class="d-flex align-start mb-2">
+                        <v-list-item-title> 备注: </v-list-item-title>
+                    </v-col>
+                    <v-col cols="8">
+                        <v-textarea
+                            v-model="paper.comment"
+                            color="primary"
+                            hide-details
+                        />
+                    </v-col>
                 </v-row>
             </v-card-content>
         </v-card>
@@ -148,6 +158,7 @@
 import ItemList from "./component/ItemList.vue";
 import customerCard from "./component/customerCard.vue";
 import { paperStore } from "../../stores/paperStore";
+import { shopStore } from "../../stores/shopStore";
 import { PAPER_TYPE, PRICE_UNIT } from "../../constant/constant";
 
 export default {
@@ -162,6 +173,7 @@ export default {
             isMYR: true,
             customer: null,
             items: null,
+            comment: ""
         },
         isDepositNumber: false,
         depositSelect: "50%",
@@ -197,6 +209,14 @@ export default {
             today.getSeconds();
         const timestamp = date + "~" + time;
         this.paper.name = timestamp;
+
+        shopStore()
+            .getUserShop()
+            .then((response) => {
+                if (response.status == "ok" && response.data != null) {
+                    this.paper.comment = response.data.comment;
+                }
+            });
 
         if (
             this.$router.currentRoute.value.name === "paper_show" ||
@@ -303,6 +323,7 @@ export default {
                 discount: this.tails[1].value,
                 deposit: this.tails[2].value,
                 items: this.$refs.itemData.data,
+                comment: this.paper.comment,
             };
             if (
                 this.$router.currentRoute.value.name === "paper_create" ||

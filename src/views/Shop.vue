@@ -19,6 +19,7 @@
                     label="简称"
                     required
                     :rules="[rules.required]"
+                    color="primary"
                 />
                 <v-text-field
                     class="pa-0"
@@ -26,6 +27,7 @@
                     label="店名"
                     required
                     :rules="[rules.required]"
+                    color="primary"
                 />
                 <v-textarea
                     class="pa-0"
@@ -35,6 +37,7 @@
                     :rules="[rules.required]"
                     auto-grow
                     rows="5"
+                    color="primary"
                 />
                 <v-text-field
                     class="pa-0"
@@ -42,6 +45,7 @@
                     label="准证编号"
                     required
                     :rules="[rules.required]"
+                    color="primary"
                 />
                 <v-text-field
                     class="pa-0"
@@ -49,6 +53,7 @@
                     label="联络人名"
                     required
                     :rules="[rules.required]"
+                    color="primary"
                 />
                 <v-text-field
                     class="pa-0"
@@ -56,6 +61,15 @@
                     label="联络人电话"
                     required
                     :rules="[rules.required]"
+                    color="primary"
+                />
+                <v-textarea
+                    class="pa-0"
+                    v-model="this.shopData.comment"
+                    label="备注"
+                    auto-grow
+                    rows="5"
+                    color="primary"
                 />
             </v-form>
         </v-card>
@@ -87,6 +101,7 @@ export default {
             ssm: "",
             boss_name: "",
             boss_phone: "",
+            comment: "",
         });
 
         shopStore()
