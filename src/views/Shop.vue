@@ -7,7 +7,7 @@
                 </v-col>
                 <v-spacer />
                 <v-col md="auto" class="d-flex align-center">
-                    <v-btn right color="primary" @click="submit">
+                    <v-btn right color="primary" @click="submit" :disabled="disabledBtn">
                         submit
                     </v-btn>
                 </v-col>
@@ -77,6 +77,7 @@ export default {
         rules: {
             required: (value) => !!value || "必填项",
         },
+        disabledBtn: false,
     }),
     setup() {
         const shopData = ref({
@@ -109,9 +110,10 @@ export default {
     },
     methods: {
         submit() {
+            this.disabledBtn = true;
             this.$refs.form.validate().then((value) => {
                 if (value.valid) this.postUserShop();
-            });
+            }).finally(() => this.disabledBtn = false);
         },
     },
 };

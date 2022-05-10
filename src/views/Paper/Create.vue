@@ -3,7 +3,7 @@
         <v-card class="px-8 py-4 mt-4 mb-8">
             <v-card-title
                 ><v-toolbar-title>创建新单</v-toolbar-title
-                ><v-btn color="primary" class="float-right" @click="submit">
+                ><v-btn color="primary" class="float-right" @click="submit" :disabled="disabledBtn">
                     {{ btnText }}
                 </v-btn></v-card-title
             >
@@ -159,6 +159,7 @@ export default {
             { subheader: "订金", value: 0, disabled: false },
             { subheader: "总共", value: 0, disabled: true },
         ],
+        disabledBtn: false,
     }),
     computed: {
         btnText() {
@@ -273,6 +274,7 @@ export default {
             });
         },
         submit() {
+            this.disabledBtn = true;
             var payload = {
                 name: this.paper.name,
                 paper_type: this.paper.isQuotation
@@ -295,12 +297,12 @@ export default {
                                 path: "/papers/" + response.data.id,
                             });
                         }
-                    });
+                    }).finally(() => this.disabledBtn = false);
             } else {
                 paperStore().putPaper(
                     this.$router.currentRoute.value.params.id,
                     payload
-                );
+                ).finally(() => this.disabledBtn = false);
             }
         },
     },
