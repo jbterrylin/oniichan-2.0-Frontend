@@ -3,7 +3,20 @@
         <v-card class="px-8 py-4 mt-4 mb-8">
             <v-card-title
                 ><v-toolbar-title>创建新单</v-toolbar-title
-                ><v-btn color="primary" class="float-right" @click="submit" :disabled="disabledBtn">
+                ><v-btn
+                    v-if="this.$router.currentRoute.value.name == 'paper_show'"
+                    color="error"
+                    class="float-right"
+                    @click="deletePaper"
+                    :disabled="disabledBtn"
+                >
+                    删除 </v-btn
+                ><v-btn
+                    color="primary"
+                    class="float-right ml-8"
+                    @click="submit"
+                    :disabled="disabledBtn"
+                >
                     {{ btnText }}
                 </v-btn></v-card-title
             >
@@ -185,7 +198,10 @@ export default {
         const timestamp = date + "~" + time;
         this.paper.name = timestamp;
 
-        if (this.$router.currentRoute.value.name === "paper_show") {
+        if (
+            this.$router.currentRoute.value.name === "paper_show" ||
+            this.$router.currentRoute.value.name === "paper_create_with_copy"
+        ) {
             paperStore()
                 .getPaper(this.$router.currentRoute.value.params.id)
                 .then((response) => {
@@ -210,37 +226,26 @@ export default {
 
                         // if deposit same with % in depositItems, isDepositNumber = false and change to that %
                         // else isDepositNumber = true
-                        this.depositItems
-                            .map((val) =>
-                                ((this.tails[0].value - this.tails[1].value) *
-                                    parseFloat(val.replace("%", ""))) /
-                                    100 ==
-                                this.tails[2].value
-                                    ? true
-                                    : false
-                            )
-                            .indexOf(true) === -1
+                        const calculater = () =>
+                            this.depositItems
+                                .map((val) =>
+                                    ((this.tails[0].value -
+                                        this.tails[1].value) *
+                                        parseFloat(val.replace("%", ""))) /
+                                        100 ==
+                                    this.tails[2].value
+                                        ? true
+                                        : false
+                                )
+                                .indexOf(true);
+
+                        calculater() === -1
                             ? (this.isDepositNumber = true)
                             : (this.depositSelect =
-                                  this.depositItems[
-                                      this.depositItems
-                                          .map((val) =>
-                                              ((this.tails[0].value -
-                                                  this.tails[1].value) *
-                                                  parseFloat(
-                                                      val.replace("%", "")
-                                                  )) /
-                                                  100 ==
-                                              this.tails[2].value
-                                                  ? true
-                                                  : false
-                                          )
-                                          .indexOf(true)
-                                  ]);
+                                  this.depositItems[calculater()]);
                         this.calculateTails();
                     }
                 });
-            this.disabledAll = true;
         }
     },
     methods: {
@@ -273,6 +278,19 @@ export default {
                 ).toFixed(2);
             });
         },
+        deletePaper() {
+            this.disabledBtn = true;
+            paperStore()
+                .deletePaper(this.$router.currentRoute.value.params.id)
+                .then((response) => {
+                    if (response.status == "ok") {
+                        this.$router.replace({
+                            path: "/papers/" + response.data.id,
+                        });
+                    }
+                })
+                .finally(() => (this.disabledBtn = false));
+        },
         submit() {
             this.disabledBtn = true;
             var payload = {
@@ -286,23 +304,28 @@ export default {
                 deposit: this.tails[2].value,
                 items: this.$refs.itemData.data,
             };
-            if (this.$router.currentRoute.value.name === "paper_create") {
+            if (
+                this.$router.currentRoute.value.name === "paper_create" ||
+                this.$router.currentRoute.value.name ===
+                    "paper_create_with_copy"
+            ) {
                 paperStore()
                     .postPaper(payload)
                     .then((response) => {
-                        console.log("hello");
-                        console.log(response);
                         if (response.status == "ok") {
                             this.$router.replace({
                                 path: "/papers/" + response.data.id,
                             });
                         }
-                    }).finally(() => this.disabledBtn = false);
+                    })
+                    .finally(() => (this.disabledBtn = false));
             } else {
-                paperStore().putPaper(
-                    this.$router.currentRoute.value.params.id,
-                    payload
-                ).finally(() => this.disabledBtn = false);
+                paperStore()
+                    .putPaper(
+                        this.$router.currentRoute.value.params.id,
+                        payload
+                    )
+                    .finally(() => (this.disabledBtn = false));
             }
         },
     },

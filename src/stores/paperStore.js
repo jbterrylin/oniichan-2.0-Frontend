@@ -39,6 +39,12 @@ export const paperStore = defineStore(
             return data;
         };
 
+        const deletePaper = async (id) => {
+            const { data } = await axios.delete(`/papers/` + id);
+            paper.value = data.data;
+            return data;
+        };
+
         return {
             paperlist,
             getPapers,
@@ -47,6 +53,7 @@ export const paperStore = defineStore(
             postPaper,
             putPaper,
             getPaper,
+            deletePaper,
         };
     },
     {

@@ -4,7 +4,9 @@
             <v-card-content>
                 <div class="d-flex mb-4 align-center">
                     <v-toolbar-title class="ml-1">单list</v-toolbar-title>
-                    <v-btn color="primary"> 拷贝创建 </v-btn>
+                    <v-btn color="primary" :disabled="selectedRow === null" @click="route('/paper/create/' + selectedRow)">
+                        拷贝创建
+                    </v-btn>
                     <v-btn
                         class="ml-4"
                         color="primary"
@@ -19,7 +21,9 @@
                     :pagination="pagination"
                     :loading="loading"
                     @change="handleTableChange"
+                    :row-selection="rowSelection"
                     bordered
+                    :rowKey="(record) => record.id"
                 >
                     <template
                         #customFilterDropdown="{
@@ -137,7 +141,7 @@ export default {
     data: () => ({
         columns: [
             {
-                title: "name",
+                title: "文件名",
                 dataIndex: "name",
                 sorter: true,
                 customFilterDropdown: true,
@@ -155,7 +159,7 @@ export default {
                 },
             },
             {
-                title: "type",
+                title: "种类",
                 dataIndex: "paper_type",
                 filters: [
                     {
@@ -170,7 +174,7 @@ export default {
                 onFilter: (value, record) => record.paper_type == value,
             },
             {
-                title: "price_unit",
+                title: "价格单位",
                 dataIndex: "price_unit",
                 filters: [
                     {
@@ -185,19 +189,19 @@ export default {
                 onFilter: (value, record) => record.price_unit == value,
             },
             {
-                title: "customer name",
+                title: "顾客名",
                 dataIndex: ["customer", "name"],
             },
             {
-                title: "discount",
+                title: "折扣",
                 dataIndex: "discount",
             },
             {
-                title: "deposit",
+                title: "定金",
                 dataIndex: "deposit",
             },
             {
-                title: "total price",
+                title: "价格",
                 dataIndex: "total_price",
             },
         ],
@@ -269,6 +273,14 @@ export default {
             state.searchText = "";
         };
 
+        // select row
+        const selectedRow = ref(null);
+        const rowSelection = {
+            onChange: (selectedRowKeys, selectedRows) =>
+                (selectedRow.value = selectedRowKeys),
+            type: "radio",
+        };
+
         return {
             paperData,
             pagination,
@@ -278,6 +290,8 @@ export default {
             handleReset,
             searchInput,
             ...toRefs(state),
+            selectedRow,
+            rowSelection,
         };
     },
     computed: {},
