@@ -196,17 +196,23 @@
                     <v-btn
                         color="primary darken-1"
                         text
-                        @click="() => (actionConfirm = null)"
+                        @click="
+                            () => {
+                                this.actionConfirm = null;  
+                            }
+                        "
                         >Cancel</v-btn
                     >
                     <v-btn
                         color="primary darken-1"
                         text
                         @click="
-                            () =>
+                            () => {
                                 this.actionConfirm === this.btnText
                                     ? this.submit()
-                                    : this.deletePaper()
+                                    : this.deletePaper();
+                                this.actionConfirm = null;
+                            }
                         "
                         >OK</v-btn
                     >
