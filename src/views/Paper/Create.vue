@@ -1,25 +1,44 @@
 <template>
     <v-container>
+        <v-alert color="primary" variant="outlined" v-if="this.$router.currentRoute.value.name == 'paper_show'">
+            <template v-slot:title> 提示 </template>
+            当使用最新的店资料时，备注并不会更改成最新店资料的备注。有需要请自行更改。
+        </v-alert>
         <v-card class="px-8 py-4 mt-4 mb-8">
-            <v-card-title
-                ><v-toolbar-title>创建新单</v-toolbar-title
-                ><v-btn
+            <v-card-title>
+                <v-toolbar-title>创建新单</v-toolbar-title>
+                <v-btn
+                    v-if="this.$router.currentRoute.value.name == 'paper_show'"
+                    color="primary"
+                    class="float-right"
+                    @click="
+                        route(
+                            '/paper_templete/' +
+                                this.$router.currentRoute.value.params.id
+                        )
+                    "
+                    :disabled="disabledBtn"
+                >
+                    下载
+                </v-btn>
+                <v-btn
                     v-if="this.$router.currentRoute.value.name == 'paper_show'"
                     color="error"
-                    class="float-right"
+                    class="float-right ml-8"
                     @click="deletePaper"
                     :disabled="disabledBtn"
                 >
-                    删除 </v-btn
-                ><v-btn
+                    删除
+                </v-btn>
+                <v-btn
                     color="primary"
                     class="float-right ml-8"
                     @click="submit"
                     :disabled="disabledBtn"
                 >
                     {{ btnText }}
-                </v-btn></v-card-title
-            >
+                </v-btn>
+            </v-card-title>
             <v-card-content>
                 <v-row>
                     <v-col cols="4" class="d-flex align-end mb-2">
@@ -34,7 +53,16 @@
                             single-line
                         />
                     </v-col>
-                    <v-col cols="4" />
+                    <v-col cols="4">
+                        <v-checkbox
+                            v-if="this.$router.currentRoute.value.name == 'paper_show'"
+                            v-model="isUseNewShopInfo"
+                            label="使用最新的店资料"
+                            color="primary"
+                            class="checkbox-text-opacity-1"
+                            hide-details
+                        />
+                    </v-col>
                     <v-col cols="4">
                         <v-checkbox
                             v-model="paper.isQuotation"
@@ -155,6 +183,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import ItemList from "./component/ItemList.vue";
 import customerCard from "./component/customerCard.vue";
 import { paperStore } from "../../stores/paperStore";
@@ -173,8 +202,9 @@ export default {
             isMYR: true,
             customer: null,
             items: null,
-            comment: ""
+            comment: "",
         },
+        isUseNewShopInfo: false,
         isDepositNumber: false,
         depositSelect: "50%",
         depositItems: ["20%", "30%", "40%", "50%", "60%"],
@@ -194,21 +224,7 @@ export default {
         },
     },
     beforeMount() {
-        const today = new Date();
-        const date =
-            today.getFullYear() +
-            "-" +
-            (today.getMonth() + 1) +
-            "-" +
-            today.getDate();
-        const time =
-            today.getHours() +
-            "." +
-            today.getMinutes() +
-            "." +
-            today.getSeconds();
-        const timestamp = date + "~" + time;
-        this.paper.name = timestamp;
+        this.paper.name = new moment().format("YYYY-MM-DD~hh:mm");
 
         shopStore()
             .getUserShop()
@@ -324,6 +340,7 @@ export default {
                 deposit: this.tails[2].value,
                 items: this.$refs.itemData.data,
                 comment: this.paper.comment,
+                isUseNewShopInfo: this.isUseNewShopInfo,
             };
             if (
                 this.$router.currentRoute.value.name === "paper_create" ||
@@ -348,6 +365,9 @@ export default {
                     )
                     .finally(() => (this.disabledBtn = false));
             }
+        },
+        route(path) {
+            this.$router.replace(path);
         },
     },
 };

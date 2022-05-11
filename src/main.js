@@ -10,9 +10,9 @@ import VueAxios from "vue-axios";
 
 import vuetify from "./plugins/vuetify";
 
-import Antd from 'ant-design-vue';
-import 'ant-design-vue/dist/antd.css';
-import '../src/styles/_variables.scss';
+import Antd from "ant-design-vue";
+import "ant-design-vue/dist/antd.css";
+import "../src/styles/_variables.scss";
 
 loadFonts();
 const pinia = createPinia();

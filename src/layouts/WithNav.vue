@@ -36,10 +36,7 @@
             </v-list>
 
             <template v-slot:append>
-                <v-list
-                    density="compact"
-                    nav
-                >
+                <v-list density="compact" nav>
                     <v-list-item
                         prepend-icon="mdi-logout"
                         title="登出"
@@ -67,13 +64,13 @@ export default {
             drawer: true,
             items: [
                 { title: "单", icon: "mdi-receipt", path: "/papers" },
+                { title: "本店资料", icon: "mdi-store", path: "/shop" },
                 { title: "产品", icon: "mdi-cart", path: "/item" },
                 {
                     title: "顾客",
                     icon: "mdi-account-multiple",
                     path: "customers",
                 },
-                { title: "本店资料", icon: "mdi-store", path: "/shop" },
                 { title: "账户", icon: "mdi-account", path: "/account" },
             ],
             rail: true,
@@ -91,7 +88,7 @@ export default {
         logout() {
             localStorage.removeItem("token");
             this.$router.replace({ path: "/" });
-        }
+        },
     },
 };
 </script>

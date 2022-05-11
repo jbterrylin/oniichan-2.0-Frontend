@@ -46,6 +46,12 @@ const router = createRouter({
             meta: { layout: "with-nav", requiresAuth: true },
             component: () => import("../views/Paper/Create.vue"),
         },
+        {
+            path: "/paper_templete/:id",
+            name: "paper_templete",
+            meta: { requiresAuth: true },
+            component: () => import("../views/Paper/PaperTemplete.vue"),
+        },
     ],
 });
 
