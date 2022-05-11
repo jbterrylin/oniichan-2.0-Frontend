@@ -1,6 +1,10 @@
 <template>
     <v-container>
-        <v-alert color="primary" variant="outlined" v-if="this.$router.currentRoute.value.name == 'paper_show'">
+        <v-alert
+            color="primary"
+            variant="outlined"
+            v-if="this.$router.currentRoute.value.name == 'paper_show'"
+        >
             <template v-slot:title> 提示 </template>
             当使用最新的店资料时，备注并不会更改成最新店资料的备注。有需要请自行更改。
         </v-alert>
@@ -25,7 +29,7 @@
                     v-if="this.$router.currentRoute.value.name == 'paper_show'"
                     color="error"
                     class="float-right ml-8"
-                    @click="deletePaper"
+                    @click="paperAction('删除')"
                     :disabled="disabledBtn"
                 >
                     删除
@@ -33,7 +37,7 @@
                 <v-btn
                     color="primary"
                     class="float-right ml-8"
-                    @click="submit"
+                    @click="paperAction(`${btnText}`)"
                     :disabled="disabledBtn"
                 >
                     {{ btnText }}
@@ -55,7 +59,10 @@
                     </v-col>
                     <v-col cols="4">
                         <v-checkbox
-                            v-if="this.$router.currentRoute.value.name == 'paper_show'"
+                            v-if="
+                                this.$router.currentRoute.value.name ==
+                                'paper_show'
+                            "
                             v-model="isUseNewShopInfo"
                             label="使用最新的店资料"
                             color="primary"
@@ -179,11 +186,39 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-dialog v-model="actionConfirm" max-width="500px">
+            <v-card class="px-8 py-4">
+                <v-card-title
+                    >你确定要{{ this.actionConfirm }}此纸吗？</v-card-title
+                >
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="primary darken-1"
+                        text
+                        @click="() => (actionConfirm = null)"
+                        >Cancel</v-btn
+                    >
+                    <v-btn
+                        color="primary darken-1"
+                        text
+                        @click="
+                            () =>
+                                this.actionConfirm === this.btnText
+                                    ? this.submit()
+                                    : this.deletePaper()
+                        "
+                        >OK</v-btn
+                    >
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
 <script>
-import moment from 'moment';
+import moment from "moment";
 import ItemList from "./component/ItemList.vue";
 import customerCard from "./component/customerCard.vue";
 import { paperStore } from "../../stores/paperStore";
@@ -215,12 +250,16 @@ export default {
             { subheader: "总共", value: 0, disabled: true },
         ],
         disabledBtn: false,
+        actionConfirm: null,
     }),
     computed: {
         btnText() {
             return this.$router.currentRoute.value.name === "paper_show"
                 ? "更改"
                 : "增加";
+        },
+        actionTitle() {
+            return this.actionConfirm || "";
         },
     },
     beforeMount() {
@@ -365,6 +404,9 @@ export default {
                     )
                     .finally(() => (this.disabledBtn = false));
             }
+        },
+        paperAction(action) {
+            this.actionConfirm = action;
         },
         route(path) {
             this.$router.replace(path);
