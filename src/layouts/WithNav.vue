@@ -1,10 +1,12 @@
 <template>
     <v-layout class="min-vw-100">
+        <!-- v-model="drawer"
+        :rail="rail"
+        permanent
+        @click="rail = false" -->
         <v-navigation-drawer
-            v-model="drawer"
-            :rail="rail"
-            permanent
-            @click="rail = false"
+            expand-on-hover
+            rail
         >
             <v-list-item
                 prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
@@ -30,7 +32,7 @@
                 <v-list-item
                     :prepend-icon="item.icon"
                     :title="item.title"
-                    value="home"
+                    :value="item.title"
                     @click="route(item.path)"
                 />
             </v-list>
@@ -65,7 +67,7 @@ export default {
             items: [
                 { title: "单", icon: "mdi-receipt", path: "/papers" },
                 { title: "本店资料", icon: "mdi-store", path: "/shop" },
-                { title: "产品", icon: "mdi-cart", path: "/item" },
+                { title: "产品", icon: "mdi-cart", path: "/items" },
                 {
                     title: "顾客",
                     icon: "mdi-account-multiple",
@@ -83,6 +85,7 @@ export default {
     },
     methods: {
         route(path) {
+            this.rail = !this.rail;
             this.$router.replace({ path: path });
         },
         logout() {
