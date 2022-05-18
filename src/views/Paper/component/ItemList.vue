@@ -33,7 +33,7 @@
                                             }[name]
                                         "
                                         :rules="
-                                            index == 0 ? rules() : onlyNumbers
+                                            index == 0 ? requiredRules() : index == 1 ? onlyNumbers : onlyNumbersBigger0
                                         "
                                         color="primary"
                                     />
@@ -222,6 +222,7 @@ export default {
         },
         total: 0,
         onlyNumbers: [(v) => parseFloat(v) >= 0 || "请输入数字"],
+        onlyNumbersBigger0: [(v) => parseFloat(v) > 0 || "请输入大于0的数字"],
     }),
 
     computed: {
@@ -247,7 +248,7 @@ export default {
     },
 
     methods: {
-        rules() {
+        requiredRules() {
             return [
                 (v) =>
                     (v != "" &&
