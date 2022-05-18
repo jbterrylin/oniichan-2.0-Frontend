@@ -13,6 +13,8 @@ import vuetify from "./plugins/vuetify";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import "../src/styles/_variables.scss";
+import 'ant-design-vue/dist/antd.less';
+
 
 loadFonts();
 const pinia = createPinia();
