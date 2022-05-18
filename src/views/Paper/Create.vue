@@ -365,7 +365,7 @@ export default {
                 .deletePaper(this.$router.currentRoute.value.params.id)
                 .then((response) => {
                     if (response.status == "ok") {
-                        this.$router.replace({
+                        this.$router.push({
                             path: "/papers/" + response.data.id,
                         });
                     }
@@ -396,7 +396,7 @@ export default {
                     .postPaper(payload)
                     .then((response) => {
                         if (response.status == "ok") {
-                            this.$router.replace({
+                            this.$router.push({
                                 path: "/papers/" + response.data.id,
                             });
                         }
@@ -415,7 +415,7 @@ export default {
             this.actionConfirm = action;
         },
         route(path) {
-            this.$router.replace(path);
+            this.$router.push(path);
         },
     },
 };

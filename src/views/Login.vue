@@ -56,7 +56,7 @@ export default {
                 })
                 .then((response) => {
                     if (response.status == "ok") {
-                        this.$router.replace("/home");
+                        this.$router.push("/home");
                     }
                 });
         },

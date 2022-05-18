@@ -93,12 +93,12 @@
                     </template>
                     <template #bodyCell="{ text, column, record }">
                         <template v-if="column.dataIndex === 'name'">
-                            <a @click="route('/papers/' + record.id)">{{
+                            <a class="" @click="route('/papers/' + record.id)">{{
                                 text
                             }}</a>
                         </template>
                         <span
-                            v-if="
+                            v-else-if="
                                 searchText &&
                                 searchedColumn === column.dataIndex
                             "
@@ -127,13 +127,7 @@
                             </template>
                         </span>
                     </template>
-                    <!-- <template #bodyCell="{ column, text }">
-                        <template v-if="true">
-                            <a>{{ text }}</a>
-                        </template>
-                    </template> -->
                 </a-table>
-                <!-- <p>{{paperData[0]}}</p> -->
             </v-card-content>
         </v-card>
     </v-container>
@@ -202,14 +196,17 @@ export default {
             },
             {
                 title: "折扣",
+                sorter: true,
                 dataIndex: "discount",
             },
             {
                 title: "定金",
+                sorter: true,
                 dataIndex: "deposit",
             },
             {
                 title: "价格",
+                sorter: true,
                 dataIndex: "total_price",
             },
         ],
@@ -305,7 +302,7 @@ export default {
     computed: {},
     methods: {
         route(path) {
-            this.$router.replace(path);
+            this.$router.push(path);
         },
     },
 };

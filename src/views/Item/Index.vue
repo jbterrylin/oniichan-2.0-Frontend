@@ -318,7 +318,7 @@ export default {
   computed: {},
   methods: {
     route(path) {
-      this.$router.replace(path);
+      this.$router.push(path);
     },
   },
 };

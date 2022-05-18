@@ -86,11 +86,11 @@ export default {
     methods: {
         route(path) {
             this.rail = !this.rail;
-            this.$router.replace({ path: path });
+            this.$router.push({ path: path });
         },
         logout() {
             localStorage.removeItem("token");
-            this.$router.replace({ path: "/" });
+            this.$router.push({ path: "/" });
         },
     },
 };
