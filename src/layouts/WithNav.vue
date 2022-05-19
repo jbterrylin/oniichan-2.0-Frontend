@@ -71,7 +71,7 @@ export default {
                 {
                     title: "顾客",
                     icon: "mdi-account-multiple",
-                    path: "customers",
+                    path: "/customers",
                 },
                 { title: "账户", icon: "mdi-account", path: "/account" },
             ],
