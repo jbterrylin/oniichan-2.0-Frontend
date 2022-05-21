@@ -15,6 +15,7 @@ import "ant-design-vue/dist/antd.css";
 import "../src/styles/_variables.scss";
 import 'ant-design-vue/dist/antd.less';
 
+// v-select's item text and title not work in this version, fuck
 
 loadFonts();
 const pinia = createPinia();
