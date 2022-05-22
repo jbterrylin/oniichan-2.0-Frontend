@@ -1975,9 +1975,9 @@
     "upath" "^2.0.1"
 
 "vuetify@^3.0.0-alpha.11", "vuetify@^3.0.0-beta.0":
-  "integrity" "sha512-698CB/Xlvxku2Tm4AsFrmQ7LzMXOjleX7A5tbyQTnhPyt0NI1OTkf5zJUoXL3TNi2TN7DglN+adI6AE69e6CeQ=="
-  "resolved" "https://registry.npmjs.org/vuetify/-/vuetify-3.0.0-beta.1.tgz"
-  "version" "3.0.0-beta.1"
+  "integrity" "sha512-mvrg8C+A8Gd3GRmtO1uidxJvd0KDTfN8vT4ARGRpXVteDHMYwbaVmGz/I4KY6gPASPkR1fVpvtz590h++2kuIA=="
+  "resolved" "https://registry.npmjs.org/vuetify/-/vuetify-3.0.0-beta.2.tgz"
+  "version" "3.0.0-beta.2"
 
 "warning@^4.0.0":
   "integrity" "sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w=="
@@ -2064,6 +2064,11 @@
   "integrity" "sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ=="
   "resolved" "https://registry.npmmirror.com/wrappy/-/wrappy-1.0.2.tgz"
   "version" "1.0.2"
+
+"xlsx@https://cdn.sheetjs.com/xlsx-0.18.7/xlsx-0.18.7.tgz":
+  "integrity" "sha512-akrziVM5MqHpaBL6ACuy/qGL8m3XNQmRJ24o2f+m122DRfUOjP4ycAqY8K+4Zu8rSA7s0sG9/4QmfZ0UFFoYFg=="
+  "resolved" "https://cdn.sheetjs.com/xlsx-0.18.7/xlsx-0.18.7.tgz"
+  "version" "0.18.7"
 
 "yallist@^4.0.0":
   "integrity" "sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A=="

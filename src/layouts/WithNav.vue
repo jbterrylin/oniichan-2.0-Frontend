@@ -1,5 +1,5 @@
 <template>
-    <v-layout class="min-vw-100">
+    <v-layout>
         <!-- v-model="drawer"
         :rail="rail"
         permanent
@@ -73,6 +73,8 @@ export default {
                     icon: "mdi-account-multiple",
                     path: "/customers",
                 },
+                { title: "字典", icon: "mdi-book", path: "/words" },
+                { title: "上传", icon: "mdi-upload", path: "/upload" },
                 { title: "账户", icon: "mdi-account", path: "/account" },
             ],
             rail: true,

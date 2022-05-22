@@ -23,7 +23,8 @@
     "vue-request": "^1.2.4",
     "vue-router": "^4.0.14",
     "vuetify": "^3.0.0-beta.0",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.7/xlsx-0.18.7.tgz"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
