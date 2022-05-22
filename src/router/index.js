@@ -70,12 +70,6 @@ const router = createRouter({
             meta: { layout: "with-nav", requiresAuth: true },
             component: () => import("../views/Words.vue"),
         },
-        {
-            path: "/upload",
-            name: "upload",
-            meta: { layout: "with-nav", requiresAuth: true },
-            component: () => import("../views/Upload.vue"),
-        },
     ],
 });
 

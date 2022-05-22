@@ -74,7 +74,6 @@ export default {
                     path: "/customers",
                 },
                 { title: "字典", icon: "mdi-book", path: "/words" },
-                { title: "上传", icon: "mdi-upload", path: "/upload" },
                 { title: "账户", icon: "mdi-account", path: "/account" },
             ],
             rail: true,
