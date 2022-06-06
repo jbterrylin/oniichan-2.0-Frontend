@@ -4,21 +4,31 @@
       variant="outlined"
       color="primary"
       class="item"
-      v-for="(alphabet, index) in alphabets"
+      v-for="(words, index) in wordList"
       :key="index"
-      style="minHeight: 140px"
+      style="minheight: 140px"
     >
-      <v-card-title> {{ alphabet }} </v-card-title>
+      <v-card-title> {{ words[0] }} </v-card-title>
       <v-card-text class="pb-0"
         ><v-list-item class="p-0">
           <v-list-item-header>
-            <v-list-item-title
-              ><div class="d-inline-block" @click="copyURL('abc')">
-                {{ "abc" }}
-              </div>
-              <div class="float-right d-inline-block" @click="copyURL('abc')">
-                {{ "abc" }}
-              </div></v-list-item-title
+            <v-list-item-title v-for="(word, index1) in words[1]" :key="index1"
+              ><v-row no-gutters>
+                <v-col @click="copyURL('word.en')">
+                  {{ word.en }}
+                </v-col>
+                <v-col
+                  v-if="type != WORD_FILTER.CAT"
+                  @click="copyURL('word.cn')"
+                >
+                  {{ word.cn }}
+                </v-col>
+                <v-col @click="copyURL('abc')">
+                  <div class="float-right d-inline-block">
+                    {{ type != WORD_FILTER.CAT ? word.category : word.cn }}
+                  </div>
+                </v-col></v-row
+              ></v-list-item-title
             >
           </v-list-item-header>
         </v-list-item></v-card-text
@@ -28,39 +38,100 @@
       variant="outlined"
       color="primary"
       class="item"
-      style="minHeight: 140px"
+      style="minheight: 140px"
     >
       <v-card-title> 分类 </v-card-title>
-      <v-card-text class="text-center p-0">
-      <v-btn-toggle
-        v-model="type"
-        variant="outlined"
-        divided
-        rounded="xl"
-        mandatory
-        color="primary"
-      >
-        <v-btn value="cn"> 中文 </v-btn>
-        <v-btn value="en"> 英文 </v-btn>
-        <v-btn value="cat"> 种类 </v-btn>
-      </v-btn-toggle>
-      </v-card-text>
+      <v-card-content>
+        <v-card-text class="text-center p-0">
+          <v-btn-toggle
+            v-model="type"
+            variant="outlined"
+            divided
+            rounded="xl"
+            mandatory
+            color="primary"
+            @update:modelValue="updateType(a)"
+          >
+            <v-btn :value="WORD_FILTER.CN"> 中文 </v-btn>
+            <v-btn :value="WORD_FILTER.EN"> 英文 </v-btn>
+            <v-btn :value="WORD_FILTER.CAT"> 种类 </v-btn>
+          </v-btn-toggle>
+        </v-card-text>
+      </v-card-content>
     </v-card>
   </div>
 </template>
 
 <script>
 import { computed, defineComponent, ref, reactive, toRefs } from "vue";
-
-// 种类，英文，拼音
-
-// cupboard
+import { wordStore } from "../stores/wordStore";
+import { WORD_FILTER } from "../constant/constant";
+import pinyin from "js-pinyin";
 
 export default {
   data: () => ({
     alphabets: "abcdefghijklmnopqrstuvwxyz".toUpperCase().split(""),
-    type: "en",
+    WORD_FILTER: WORD_FILTER,
   }),
+  setup() {
+    const type = ref(WORD_FILTER.EN);
+
+    const wordList = ref([]);
+
+    const compareChinese = (a, b) => {
+      return pinyin
+        .getFullChars(a)
+        .toUpperCase()
+        .localeCompare(pinyin.getFullChars(b).toUpperCase());
+    };
+
+    const getUserWords = () =>
+      wordStore()
+        .getUserWords()
+        .then((value) => {
+          if (value.status == "ok") {
+            wordList.value = value.data.reduce(function (r, a) {
+              var filter_header = "";
+              if (type.value == WORD_FILTER.EN) {
+                filter_header = a.en[0].toUpperCase();
+              } else if (type.value == WORD_FILTER.CN) {
+                console.log(pinyin.getFullChars(a.cn));
+                filter_header = pinyin.getFullChars(a.cn)[0];
+              } else {
+                filter_header = a.category;
+              }
+              r[filter_header] = r[filter_header] || [];
+              r[filter_header].push(a);
+              return r;
+            }, Object.create(null));
+            console.log(wordList.value);
+
+            Object.entries(wordList.value).forEach((words) => {
+              wordList.value[words[0]] = words[1]
+                .sort((a, b) => a.en.localeCompare(b.en))
+                .sort((a, b) =>
+                  type.value == WORD_FILTER.CAT
+                    ? 0
+                    : compareChinese(a.category, b.category)
+                );
+            });
+
+            wordList.value = Object.entries(wordList.value).sort((a, b) =>
+              type.value == WORD_FILTER.CAT
+                ? compareChinese(a[0], b[0])
+                : a[0].localeCompare(b[0])
+            );
+          }
+        });
+
+    getUserWords();
+
+    return {
+      type,
+      wordList,
+      getUserWords,
+    };
+  },
   methods: {
     async copyURL(mytext) {
       try {
@@ -70,6 +141,9 @@ export default {
         alert("Cannot copy");
       }
     },
+    updateType() {
+      this.getUserWords();
+    },
   },
 };
 </script>
@@ -78,7 +152,8 @@ export default {
 .waterfall-container {
   display: flex;
   flex-flow: column wrap;
-  align-content: space-between;
+  /* align-content: space-between; */
+  align-content: baseline;
   /* 容器必须有固定高度
    * 且高度大于最高的列高 */
   height: 100vh;
