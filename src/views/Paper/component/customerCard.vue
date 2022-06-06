@@ -28,6 +28,13 @@
           @click:input="this.$refs.form.validate()"
           :disabled="disabledInput"
         />
+        <v-text-field
+          v-model="data.ssm"
+          label="准证号码"
+          color="primary"
+          @click:input="this.$refs.form.validate()"
+          :disabled="disabledInput"
+        />
         <v-textarea
           v-model="data.address"
           label="地址"
@@ -61,6 +68,7 @@ export default {
       name: "",
       address: "",
       phone: "",
+      ssm: "",
     },
     disabledInput: false,
   }),
