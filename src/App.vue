@@ -32,6 +32,9 @@ export default {
                 return response;
             },
             (err) => {
+                if(err.response.status == 401) {
+                    localStorage.removeItem("token");
+                }
                 console.log(err);
                 this.vToast.show({
                     message:
